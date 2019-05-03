@@ -1,13 +1,155 @@
-#include <iostream>
-#include <fstream>
-#include <sstream>
-#include <string>
 #include "paging.h"
 
-using namespace std;
-
+bool checkSameProcess(process* proc, int ID, int count)
+{
+	for(int i = 0; i< count; i++)
+	{
+		if(proc[i].id == ID)
+			return true;
+	}
+	return false;
+}
 
 int main()
 {
+	int jobCount = 0;
+	process procArray[100];
+	string buffer;
+	process physPage[20];
+	process virPage[100];
+	process *swap;
+	process created[100];
+	int createdCount = 0;
+	int swapCount = 0;
+	int physPageCount = 0;
+	int virPageCount = 0;
 
+    ifstream fin("memory.dat");
+    if (!fin.good())
+    {
+    	cout << "File not found\n";
+	}
+    else
+    {
+        cout << "File is found\n";
+        while (!fin.eof() && jobCount < 100)
+	    {
+            getline(fin, buffer);
+            cout << buffer << endl;
+	        stringstream ss(buffer);
+	        ss >> procArray[jobCount].id >> procArray[jobCount].action >> procArray[jobCount].page;
+            jobCount++;
+	    }
+	    fin.close();
+        cout << "Job Count : " << jobCount << endl;
+        //printStruct(procArray, 0, jobCount);
+
+        for(int i = 0; i < jobCount; i++)
+        {
+        	if(procArray[i].action == 'C' || procArray[i].action == 'c')
+        	{
+        		if(checkSameProcess(procArray, procArray[i].id, createdCount)) //process already created
+        		{
+        			//terminate and free all its pages before recreated
+
+        			cout << "Freed before re-created\n";
+        		}
+        		else
+        		{
+        			//create process
+        			created[createdCount]=copy1Struct(procArray[i]);
+        			created[createdCount].created = 1;
+        			createdCount++;
+        			cout << "Process created\n";
+        			printStructInfo(created, 0, createdCount);
+        		}
+        	}
+        	else if(procArray[i].action == 'T' || procArray[i].action == 't')
+        	{
+        		bool found = 0;
+        		for(int j = 0; j<createdCount; j++)
+        		{
+        			if(created[j].id == procArray[i].id)
+        			{
+        				found = 1;
+        				created[j].terminated = 1;
+        				//free all pages
+        				int count = 0;
+
+        			}
+        		}
+        		if(!found)
+        		{
+        			created[createdCount]=copy1Struct(procArray[i]);
+        			created[createdCount].killed = 1;
+        			createdCount++;
+        			cout << "process not found and killed\n";
+        			printStructInfo(created, 0, createdCount);
+        		}
+        	}
+        	else if(procArray[i].action == 'A' || procArray[i].action == 'a')
+        	{
+
+        	}
+        	else if(procArray[i].action == 'F' || procArray[i].action == 'f')
+        	{
+
+        	}
+        	else if(procArray[i].action == 'R' || procArray[i].action == 'r')
+        	{
+        		bool found = 0;
+        		int count= 0;
+        		for(int j = 0; j<createdCount; j++)
+           		{
+        			if(created[j].id == procArray[i].id)
+           			{
+        				count++;
+        				if(count == procArray[i].page)
+        				{
+        					found = 1;
+        				}
+        			}
+           		}
+           		if(!found)
+           		{
+           			created[createdCount]=copy1Struct(procArray[i]);
+           			created[createdCount].killed = 1;
+        		    createdCount++;
+           			cout << "process not found and killed\n";
+           			printStructInfo(created, 0, createdCount);
+           		}
+        	}
+        	else if(procArray[i].action == 'W' || procArray[i].action == 'w')
+        	{
+        		bool found = 0;
+        		int count= 0;
+          		for(int j = 0; j<createdCount; j++)
+          		{
+           			if(created[j].id == procArray[i].id)
+           			{
+           				count++;
+           				if(count == procArray[i].page)
+        				{
+           					found = 1;
+           					created[j].modified = 1;
+        				}
+        			}
+          		}
+           		if(!found)
+           		{
+           			created[createdCount]=copy1Struct(procArray[i]);
+           			created[createdCount].killed = 1;
+           		    createdCount++;
+           		    cout << "process not found and killed\n";
+          			printStructInfo(created, 0, createdCount);
+           		}
+        	}
+        	else
+        	{
+        		cout << "Wrong action character\n";
+        	}
+        }
+    }
+
+	return 0;
 }
