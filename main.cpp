@@ -10,6 +10,20 @@ bool checkSameProcess(process* proc, int ID, int count)
 	return false;
 }
 
+void resetProcessVal(process proc)
+{
+	proc.id = -1;
+	proc.page=0;
+	proc.swap=0;
+	proc.killed=0;
+	proc.pageAllocated=0;
+	proc.modified=0;
+	proc.terminated=0;
+	proc.created=0;
+	proc.pageNum=0;
+	return;
+}
+
 int main()
 {
 	int jobCount = 0;
@@ -48,10 +62,28 @@ int main()
         {
         	if(procArray[i].action == 'C' || procArray[i].action == 'c')
         	{
-        		if(checkSameProcess(procArray, procArray[i].id, createdCount)) //process already created
+        		if(checkSameProcess(created, procArray[i].id, createdCount)) //process already created
         		{
         			//terminate and free all its pages before recreated
-
+        			for(int j = 0; j<createdCount; j++)
+        			{
+        			     if(created[j].id == procArray[i].id)
+        			     {
+//        			        created[j].terminated = 1;
+        			        //find and free all pages
+        			        int count = 0;
+        			        while(count<created[j].pageAllocated)
+        			        {
+        			        	int k = 0;
+        			        	if(physPage[k].id==procArray[i].id)
+        			        	{
+        			        		resetProcessVal(physPage[k]);
+        			        		count++;
+        			        	}
+        			        }
+        			        created[j].pageAllocated = 0;
+        			     }
+        			}
         			cout << "Freed before re-created\n";
         		}
         		else
@@ -73,9 +105,18 @@ int main()
         			{
         				found = 1;
         				created[j].terminated = 1;
-        				//free all pages
+        				//find and free all pages
         				int count = 0;
-
+        				while(count<created[j].pageAllocated)
+        				{
+        					int k = 0;
+        					if(physPage[k].id==procArray[i].id)
+        					{
+        						resetProcessVal(physPage[k]);
+        						count++;
+        					}
+        				}
+        				created[j].pageAllocated = 0;
         			}
         		}
         		if(!found)
@@ -93,7 +134,35 @@ int main()
         	}
         	else if(procArray[i].action == 'F' || procArray[i].action == 'f')
         	{
-
+        		bool found = 0;
+        		for(int j = 0; j<createdCount; j++)
+        		{
+        			if(created[j].id == procArray[i].id)
+        			{
+        				found = 1;
+        				//        		        				created[j].terminated = 1;
+        				//find and free all pages
+        				int count = 0;
+        				while(count<created[j].pageAllocated)
+        				{
+        					int k = 0;
+        					if(physPage[k].id==procArray[i].id)
+        					{
+        						resetProcessVal(physPage[k]);
+        						count++;
+        					}
+        				}
+        				created[j].pageAllocated = 0;
+        			}
+        		}
+        		if(!found)
+        		{
+        			created[createdCount]=copy1Struct(procArray[i]);
+        			created[createdCount].killed = 1;
+        			createdCount++;
+        			cout << "process not found and killed\n";
+        			printStructInfo(created, 0, createdCount);
+        		}
         	}
         	else if(procArray[i].action == 'R' || procArray[i].action == 'r')
         	{
