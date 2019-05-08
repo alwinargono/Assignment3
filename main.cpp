@@ -1,4 +1,7 @@
 #include "paging.h"
+#include <iostream>
+
+using namespace std;
 
 bool checkSameProcess(process* proc, int ID, int count)
 {
