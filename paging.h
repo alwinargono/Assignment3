@@ -4,6 +4,7 @@
 #include <fstream>
 #include <sstream>
 #include <string>
+#include <queue>
 
 
 using namespace std;
@@ -18,6 +19,8 @@ struct process{
     bool modified;
     bool terminated;
     bool created;
+
+    queue<int>myqueue;
 
 //    int arrival;
 //    int duration;
@@ -117,6 +120,23 @@ void SortArvlLtoH(process arr[], int n)
         }
     }
     return;
+}
+
+void FIFO(process proc[], int processIndexSwap, int swap)
+{
+    if(myqueue.empty())
+    {
+        for(int i = 0;i<20;i++)
+        {
+            myqueue.push(i);
+        }
+    }
+    else
+    {
+        swap(proc[page],proc[myqueue.top]);
+        myqueue.push(myqueue.front());
+        myqueue.pop();
+    }
 }
 
 #endif
