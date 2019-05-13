@@ -1,7 +1,19 @@
 #include "paging.h"
-#include <iostream>
+#include <cstdlib>
+#include <ctime>
 
-using namespace std;
+static void getRand (int *dst) { //generate random num 1-20
+    int sz, pos, i, src[20];
+    for (i = 0; i < sizeof(src)/sizeof(*src); i++)
+        src[i] = i + 1;
+    sz = 20;
+    for (i = 0; i < 20; i++) {
+        pos = rand() % sz;
+        dst[i] = src[pos];
+        src[pos] = src[sz-1];
+        sz--;
+    }
+}
 
 bool checkSameProcess(process* proc, int ID, int count)
 {
@@ -27,20 +39,48 @@ void resetProcessVal(process proc)
 	return;
 }
 
+bool checkCreated(process* arr, int id)
+{
+	for(int i = 0; i<sizeof(arr); i++)
+	{
+		if(arr[i].id == id)
+			return true;
+	}
+	return false;
+}
+
+bool checkAllMod(process* arr)
+{
+	for(int i = 0; i<sizeof(arr); i++)
+	{
+		if(arr[i].modified == false)
+			return false;
+	}
+	return true;
+}
+
 int main()
 {
 	int jobCount = 0;
 	process procArray[100];
 	string buffer;
 	process physPage[20];
-	process virPage[100];
-	process *swap;
+//	process virPage[100];
+	process swap[100];
 	process created[100];
 	int createdCount = 0;
 	int swapCount = 0;
 	int physPageCount = 0;
-	int virPageCount = 0;
+//	int virPageCount = 0;
+	int choice;
+	int randomNum[20];
 
+	srand (time (NULL));
+	getRand(randomNum);
+//	for(int i = 0; i< 20;i++)
+//	{
+//		cout << randomNum[i] << endl;
+//	}
     ifstream fin("memory.dat");
     if (!fin.good())
     {
@@ -59,6 +99,8 @@ int main()
 	    }
 	    fin.close();
         cout << "Job Count : " << jobCount << endl;
+        cout << "algorithm: 1 Fifo 2 Lru 3 Random\n";
+        cin >> choice;
         //printStruct(procArray, 0, jobCount);
 
         for(int i = 0; i < jobCount; i++)
@@ -120,6 +162,7 @@ int main()
         					}
         				}
         				created[j].pageAllocated = 0;
+        				cout << "Freed before re-created\n";
         			}
         		}
         		if(!found)
@@ -133,7 +176,36 @@ int main()
         	}
         	else if(procArray[i].action == 'A' || procArray[i].action == 'a')
         	{
+        		bool valid = checkCreated(created, procArray[i].id);
+        		bool allModified = checkAllMod(physPage);
+        		if(valid && !allModified)
+        		{
+        			if(physPageCount < 20)
+        			{
+        				procArray[i].vir = procArray[i].page;
+        				procArray[i].phys = physPageCount;
+        				procArray[i].pageAllocated++;
+        				physPage[physPageCount] = copy1Struct(procArray[i]);
+        				physPageCount++;
+        				cout << "adding to physical page\n";
+        			}
+        			else //flush nonmodified page
+        			{
 
+        			}
+        		}
+        		else if(valid && allModified)
+        		{
+        			switch(choice)
+        			{
+        			case 1: // FIFO
+        			case 2: // LRU
+        			case 3:
+        				break;// Random
+        			}
+        		}
+        		else
+        			cout << "Process id is not created\n";
         	}
         	else if(procArray[i].action == 'F' || procArray[i].action == 'f')
         	{
@@ -143,7 +215,7 @@ int main()
         			if(created[j].id == procArray[i].id)
         			{
         				found = 1;
-        				//        		        				created[j].terminated = 1;
+        				//created[j].terminated = 1;
         				//find and free all pages
         				int count = 0;
         				while(count<created[j].pageAllocated)
@@ -156,6 +228,7 @@ int main()
         					}
         				}
         				created[j].pageAllocated = 0;
+        				cout << "Freed before re-created\n";
         			}
         		}
         		if(!found)
@@ -176,11 +249,13 @@ int main()
         			if(created[j].id == procArray[i].id)
            			{
         				count++;
-        				if(count == procArray[i].page)
+
+        				if(count == procArray[i].vir)
         				{
         					found = 1;
+        					procArray[i].accessed = 1;
         				}
-        			}
+           			}
            		}
            		if(!found)
            		{

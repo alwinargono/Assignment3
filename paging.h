@@ -5,9 +5,11 @@
 #include <sstream>
 #include <string>
 #include <queue>
-
+//#include <utility>
 
 using namespace std;
+
+queue<int> myqueue;
 
 struct process{
     int id;
@@ -19,8 +21,14 @@ struct process{
     bool modified;
     bool terminated;
     bool created;
+    int pageNum;
+    int modNum;
+    bool accessed;
+    int vir;
+    int phys;
 
-    queue<int>myqueue;
+
+
 
 //    int arrival;
 //    int duration;
@@ -32,7 +40,7 @@ struct process{
 //    bool done;
 
     process(): id(-1),page(0), swap(0), killed(0), pageAllocated(0), modified(0),
-    		terminated(0), created(0)
+    		terminated(0), created(0), pageNum(0), modNum(-1)
     {}
 };
 
@@ -48,6 +56,7 @@ process copy1Struct(process arr)
     newProc.modified = arr.modified;
     newProc.terminated = arr.terminated;
     newProc.created = arr.created;
+    newProc.pageNum = arr.pageNum;
 
     return newProc;
 }
@@ -104,25 +113,25 @@ void swap(struct process *xp, struct process *yp)
     *yp = temp;
 }
 
-// A function to implement bubble sort and modify the array
-void SortArvlLtoH(process arr[], int n)
-{
-    int i, j;
-    for (i = 0; i < n-1; i++)
-    {
-        // Last i elements are already in place
-        for (j = 0; j < n-i-1; j++)
-        {
-//            if (arr[j].arrival > arr[j+1].arrival)
-            {
-                swap(&arr[j], &arr[j+1]);
-            }
-        }
-    }
-    return;
-}
+//// A function to implement bubble sort and modify the array
+//void SortArvlLtoH(process arr[], int n)
+//{
+//    int i, j;
+//    for (i = 0; i < n-1; i++)
+//    {
+//        // Last i elements are already in place
+//        for (j = 0; j < n-i-1; j++)
+//        {
+////            if (arr[j].arrival > arr[j+1].arrival)
+//            {
+//                swap(&arr[j], &arr[j+1]);
+//            }
+//        }
+//    }
+//    return;
+//}
 
-void FIFO(process proc[], int processIndexSwap, int swap)
+void FIFO(process proc[], process newProc, int processIndexSwap)
 {
     if(myqueue.empty())
     {
@@ -133,7 +142,7 @@ void FIFO(process proc[], int processIndexSwap, int swap)
     }
     else
     {
-        swap(proc[page],proc[myqueue.top]);
+        swap(&newProc, &proc[myqueue.front()]);
         myqueue.push(myqueue.front());
         myqueue.pop();
     }
