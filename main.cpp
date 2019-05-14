@@ -66,7 +66,7 @@ int main()
 	string buffer;
 	process physPage[20];
 //	process virPage[100];
-	process swap[100];
+	process swapArr[100];
 	process created[100];
 	int createdCount = 0;
 	int swapCount = 0;
@@ -191,7 +191,16 @@ int main()
         			}
         			else //flush nonmodified page
         			{
-
+        				int index;
+        				for(int y = 0; y<20; y++)
+        				{
+        					if(!physPage[y].modified)
+        					{
+        						index= y;
+        						break;
+        					}
+        				}
+        				swap(&physPage[index], &procArray[i]);
         			}
         		}
         		else if(valid && allModified)
@@ -200,7 +209,7 @@ int main()
         			{
         			case 1: // FIFO
         			case 2: // LRU
-        			case 3:
+        			case 3: RandomSwap(physPage, procArray[i], randomNum, swapCount, swapArr);
         				break;// Random
         			}
         		}
