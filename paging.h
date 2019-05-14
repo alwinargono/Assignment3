@@ -131,7 +131,7 @@ void swap(struct process *xp, struct process *yp)
 //    return;
 //}
 
-void FIFO(process proc[], process newProc, int processIndexSwap)
+void LRU(process proc[], process newProc)
 {
     if(myqueue.empty())
     {
