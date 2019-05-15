@@ -150,6 +150,7 @@ void LRU(process proc[], process newProc, int processIndexSwap)
 
 void RandomSwap(process* proc, process newProc, int* randArr, int swapCount, process* swapArr)
 {
+	proc[randArr[swapCount]].swap=1;
 	swap(&proc[randArr[swapCount]], &newProc);
 	swapArr[swapCount]= copy1Struct(newProc);
 	swapCount++;
@@ -157,7 +158,8 @@ void RandomSwap(process* proc, process newProc, int* randArr, int swapCount, pro
 
 void FIFO(process proc[], process newProc, int processIndexSwap)
 {
-    
+
 }
+
 
 #endif
