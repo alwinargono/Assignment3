@@ -150,7 +150,6 @@ void LRU(process proc[], process newProc, int processIndexSwap)
 
 void RandomSwap(process* proc, process newProc, int* randArr, int swapCount, process* swapArr)
 {
-	proc[randArr[swapCount]].swap=1;
 	swap(&proc[randArr[swapCount]], &newProc);
 	swapArr[swapCount]= copy1Struct(newProc);
 	swapCount++;
@@ -158,8 +157,24 @@ void RandomSwap(process* proc, process newProc, int* randArr, int swapCount, pro
 
 void FIFO(process proc[], process newProc, int processIndexSwap)
 {
-
+    if(myqueue.empty())
+    {
+        for(int i = 0;i<20;i++)
+        {
+            myqueue.push(i);
+        }
+    }
+    else
+    {
+        if(newproc.id != proc[myqueue.front()].id && newproc.page != proc[myqueue.front()].page)
+        {
+            swap(&newProc, &proc[myqueue.front()]);
+            myqueue.push(myqueue.front());
+            myqueue.pop();
+        }
+        
+    }
+    
 }
-
 
 #endif
