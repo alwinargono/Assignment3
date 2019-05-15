@@ -39,6 +39,31 @@ void resetProcessVal(process proc)
 	return;
 }
 
+void printCreatedProc(process* proc)
+{
+	int count = 0;
+	while(proc[count].id != -1)
+	{
+		cout << "Process id: " << proc[count].id << endl;
+		cout << "Virtual address: " << proc[count].vir << endl;
+		cout << "Physical address: " << proc[count].phys << endl;
+		count++;
+	}
+}
+
+void printPhys(process* proc)
+{
+	for(int i = 0; i<20; i++)
+	{
+		cout << "index " << i << "\t\t";
+		if(proc[i].id == -1)
+			cout << "FREE\n";
+		else
+			cout << "Process id: " << proc[i].id << endl;
+
+	}
+}
+
 bool checkCreated(process* arr, int id)
 {
 	for(int i = 0; i<sizeof(arr); i++)
@@ -74,6 +99,7 @@ int main()
 //	int virPageCount = 0;
 	int choice;
 	int randomNum[20];
+	int index;
 
 	srand (time (NULL));
 	getRand(randomNum);
@@ -191,7 +217,7 @@ int main()
         			}
         			else //flush nonmodified page
         			{
-        				int index;
+
         				for(int y = 0; y<20; y++)
         				{
         					if(!physPage[y].modified)
@@ -306,6 +332,18 @@ int main()
         	}
         }
     }
+
+    cout << "CREATED PROCESS\n";
+    printCreatedProc(physPage);
+    cout << endl;
+
+    cout << "SWAP PROCESS\n";
+    printCreatedProc(swapArr);
+    cout << endl;
+
+    cout << "PHYSICAL PAGE\n";
+    printPhys(physPage);
+    cout << endl;
 
 	return 0;
 }
