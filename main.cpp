@@ -105,13 +105,10 @@ int main()
 	int choice;
 	int randomNum[20];
 	int index;
+	int size = 0;
 
 	srand (time (NULL));
 	getRand(randomNum);
-	for(int i = 0; i< 20;i++)
-	{
-		cout << randomNum[i] << endl;
-	}
     ifstream fin("memory.dat");
     if (!fin.good())
     {
@@ -141,7 +138,7 @@ int main()
         		if(checkSameProcess(created, procArray[i].id, createdCount)) //process already created
         		{
         			//terminate and free all its pages before recreated
-        			for(int j = 0; j<createdCount; j++)
+        			for(int j = 0; j < createdCount; j++)
         			{
         			     if(created[j].id == procArray[i].id)
         			     {
@@ -216,10 +213,16 @@ int main()
         				procArray[i].vir = procArray[i].page;
         				procArray[i].phys = physPageCount;
         				procArray[i].pageAllocated++;
+
+						created[i].vir = procArray[i].vir;
+						created[i].page = procArray[i].vir;
+						created[i].id = procArray[i].id;
+        				created[i].pageAllocated++;
+
+						cout<<"created vir: "<<procArray[i].id<<"\n";
+
         				physPage[physPageCount] = copy1Struct(procArray[i]);
-						cout<< physPage[physPageCount].vir<<" hahahahhahah\n";
         				physPageCount++;
-						cout <<"hello "<<procArray[i].vir<<"\n";
         				cout << "adding to physical page\n";
         			}
         			else //flush nonmodified page
@@ -241,7 +244,7 @@ int main()
 					procArray[i].vir = procArray[i].page;
 					switch(choice)
         			{
-        			case 1: // FIFO
+        			case 1: FIFO(physPage, procArray[i],swapArr);
         			case 2: LRU(physPage, procArray[i],swapArr);
         			case 3: RandomSwap(physPage, procArray[i], randomNum, swapCount, swapArr);
         				break;// Random
@@ -252,36 +255,52 @@ int main()
         	}
         	else if(procArray[i].action == 'F' || procArray[i].action == 'f')
         	{
-        		bool found = 0;
-        		for(int j = 0; j<createdCount; j++)
-        		{
-        			if(created[j].id == procArray[i].id)
-        			{
-        				found = 1;
-        				//created[j].terminated = 1;
-        				//find and free all pages
-        				int count = 0;
-        				while(count<created[j].pageAllocated)
-        				{
-        					int k = 0;
-        					if(physPage[k].id==procArray[i].id)
-        					{
-        						resetProcessVal(physPage[k]);
-        						count++;
-        					}
-        				}
-        				created[j].pageAllocated = 0;
-        				cout << "Freed before re-created\n";
-        			}
-        		}
-        		if(!found)
-        		{
-        			created[createdCount]=copy1Struct(procArray[i]);
-        			created[createdCount].killed = 1;
-        			createdCount++;
-        			cout << "process not found and killed\n";
-        			printStructInfo(created, 0, createdCount);
-        		}
+				cout << "Process id is: "<<procArray[i].id<<"\n";
+				bool found = 0;
+					for(int j = 0; j<20; j++)
+					{
+						if(created[j].vir == procArray[i].page && created[j].id == procArray[i].id)
+						{
+							if(j == 0)
+							{
+								physPage[0].id = -1;
+							}
+							else{
+								physPage[j-1].id = -1;
+							}
+						}
+					}
+				// bool found = 0;
+        		// for(int j = 0; j<createdCount; j++)
+        		// {
+        		// 	if(created[j].id == procArray[i].id)
+        		// 	{
+        		// 		found = 1;
+        		// 		//created[j].terminated = 1;
+        		// 		//find and free all pages
+        		// 		int count = 0;
+        		// 		while(count<created[j].pageAllocated)
+        		// 		{
+        		// 			int k = 0;
+        		// 			if(physPage[k].id == procArray[i].id)
+        		// 			{
+        		// 				resetProcessVal(physPage[k]);
+				// 				physPage[i].id = -1;
+        		// 				count++;
+        		// 			}
+        		// 		}
+        		// 		created[j].pageAllocated = 0;
+        		// 		cout << "Freed before re-created\n";
+        		// 	}
+        		// }
+        		// if(!found)
+        		// {
+        		// 	created[createdCount]=copy1Struct(procArray[i]);
+        		// 	created[createdCount].killed = 1;
+        		// 	createdCount++;
+        		// 	cout << "process not found and killed\n";
+        		// 	printStructInfo(created, 0, createdCount);
+        		// }
         	}
         	else if(procArray[i].action == 'R' || procArray[i].action == 'r')
         	{
@@ -311,7 +330,11 @@ int main()
         	}
         	else if(procArray[i].action == 'W' || procArray[i].action == 'w')
         	{
-        		bool found = 0;
+				if(physPage[0].modified == 1)
+				{
+					cout<<"wofnercwepokdpwekdpwoekdpwekdp"<<endl;
+				}
+				bool found = 0;
         		int count= 0;
           		for(int j = 0; j<createdCount; j++)
           		{
@@ -333,7 +356,7 @@ int main()
            		    cout << "process not found and killed\n";
           			printStructInfo(created, 0, createdCount);
            		}
-        	}
+			}
         	else
         	{
         		cout << "Wrong action character\n";

@@ -57,6 +57,7 @@ process copy1Struct(process arr)
     newProc.terminated = arr.terminated;
     newProc.created = arr.created;
     newProc.pageNum = arr.pageNum;
+    newProc.modNum = arr.modNum;
     newProc.accessed = arr.accessed;
     newProc.vir = arr.vir;
     newProc.phys = arr.phys;
@@ -131,19 +132,18 @@ void LRU(process proc[], process newProc, process* swapArr)
         swapArr[myqueue.front()] = copy1Struct(newProc);
         myqueue.push(myqueue.front());
         myqueue.pop();
-
     }
 }
 
 void RandomSwap(process* proc, process newProc, int* randArr, int swapCount, process* swapArr)
 {
-	proc[randArr[swapCount]].swap=1;
+	proc[randArr[swapCount]].swap = 1;
 	swap(&proc[randArr[swapCount]], &newProc);
 	swapArr[swapCount]= copy1Struct(newProc);
 	swapCount++;
 }
 
-void FIFO(process proc[], process newProc, int processIndexSwap)
+void FIFO(process proc[], process newProc, process* swapArr)
 {
     if(myqueue.empty())
     {
@@ -157,6 +157,7 @@ void FIFO(process proc[], process newProc, int processIndexSwap)
         if(newProc.id != proc[myqueue.front()].id && newProc.page != proc[myqueue.front()].page)
         {
             swap(&newProc, &proc[myqueue.front()]);
+            swapArr[myqueue.front()] = copy1Struct(newProc);
             myqueue.push(myqueue.front());
             myqueue.pop();
         }
