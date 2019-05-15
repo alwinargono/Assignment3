@@ -40,7 +40,7 @@ struct process{
 //    bool done;
 
     process(): id(-1),page(0), swap(0), killed(0), pageAllocated(0), modified(0),
-    		terminated(0), created(0), pageNum(0), modNum(-1)
+    		terminated(0), created(0), pageNum(0), modNum(-1),vir(0),phys(0)
     {}
 };
 
@@ -57,6 +57,9 @@ process copy1Struct(process arr)
     newProc.terminated = arr.terminated;
     newProc.created = arr.created;
     newProc.pageNum = arr.pageNum;
+    newProc.accessed = arr.accessed;
+    newProc.vir = arr.vir;
+    newProc.phys = arr.phys;
 
     return newProc;
 }
@@ -113,24 +116,6 @@ void swap(struct process *xp, struct process *yp)
     *yp = temp;
 }
 
-//// A function to implement bubble sort and modify the array
-//void SortArvlLtoH(process arr[], int n)
-//{
-//    int i, j;
-//    for (i = 0; i < n-1; i++)
-//    {
-//        // Last i elements are already in place
-//        for (j = 0; j < n-i-1; j++)
-//        {
-////            if (arr[j].arrival > arr[j+1].arrival)
-//            {
-//                swap(&arr[j], &arr[j+1]);
-//            }
-//        }
-//    }
-//    return;
-//}
-
 void LRU(process proc[], process newProc, int processIndexSwap)
 {
     if(myqueue.empty())
@@ -158,7 +143,23 @@ void RandomSwap(process* proc, process newProc, int* randArr, int swapCount, pro
 
 void FIFO(process proc[], process newProc, int processIndexSwap)
 {
-
+    if(myqueue.empty())
+    {
+        for(int i = 0;i<20;i++)
+        {
+            myqueue.push(i);
+        }
+    }
+    else
+    {
+        if(newProc.id != proc[myqueue.front()].id && newProc.page != proc[myqueue.front()].page)
+        {
+            swap(&newProc, &proc[myqueue.front()]);
+            myqueue.push(myqueue.front());
+            myqueue.pop();
+        }
+        
+    }
 }
 
 

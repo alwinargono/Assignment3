@@ -42,12 +42,17 @@ void resetProcessVal(process proc)
 void printCreatedProc(process* proc)
 {
 	int count = 0;
-	while(proc[count].id != -1)
+	
+	for(int i = 0;i<20;i++)
 	{
-		cout << "Process id: " << proc[count].id << endl;
-		cout << "Virtual address: " << proc[count].vir << endl;
-		cout << "Physical address: " << proc[count].phys << endl;
-		count++;
+		if(proc[i].id != -1)
+		{
+			cout << "Process id: " << proc[i].id << endl;
+			cout << "Virtual address: " << proc[i].vir << endl;
+			cout << "Physical address: " << proc[i].phys << endl;
+			cout << "------------------" <<endl;
+
+		}
 	}
 }
 
@@ -212,7 +217,9 @@ int main()
         				procArray[i].phys = physPageCount;
         				procArray[i].pageAllocated++;
         				physPage[physPageCount] = copy1Struct(procArray[i]);
+						cout<< physPage[physPageCount].vir<<" hahahahhahah\n";
         				physPageCount++;
+						cout <<"hello "<<procArray[i].vir<<"\n";
         				cout << "adding to physical page\n";
         			}
         			else //flush nonmodified page
