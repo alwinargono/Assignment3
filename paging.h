@@ -131,7 +131,7 @@ void swap(struct process *xp, struct process *yp)
 //    return;
 //}
 
-void FIFO(process proc[], process newProc, int processIndexSwap)
+void LRU(process proc[], process newProc, int processIndexSwap)
 {
     if(myqueue.empty())
     {
@@ -153,6 +153,11 @@ void RandomSwap(process* proc, process newProc, int* randArr, int swapCount, pro
 	swap(&proc[randArr[swapCount]], &newProc);
 	swapArr[swapCount]= copy1Struct(newProc);
 	swapCount++;
+}
+
+void FIFO(process proc[], process newProc, int processIndexSwap)
+{
+    
 }
 
 #endif
