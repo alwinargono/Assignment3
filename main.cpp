@@ -108,10 +108,10 @@ int main()
 
 	srand (time (NULL));
 	getRand(randomNum);
-//	for(int i = 0; i< 20;i++)
-//	{
-//		cout << randomNum[i] << endl;
-//	}
+	for(int i = 0; i< 20;i++)
+	{
+		cout << randomNum[i] << endl;
+	}
     ifstream fin("memory.dat");
     if (!fin.good())
     {
@@ -238,10 +238,11 @@ int main()
         		}
         		else if(valid && allModified)
         		{
-        			switch(choice)
+					procArray[i].vir = procArray[i].page;
+					switch(choice)
         			{
         			case 1: // FIFO
-        			case 2: // LRU
+        			case 2: LRU(physPage, procArray[i],swapArr);
         			case 3: RandomSwap(physPage, procArray[i], randomNum, swapCount, swapArr);
         				break;// Random
         			}
@@ -340,15 +341,15 @@ int main()
         }
     }
 
-    cout << "CREATED PROCESS\n";
+    cout << "\nCREATED PROCESS\n\n";
     printCreatedProc(physPage);
     cout << endl;
 
-    cout << "SWAP PROCESS\n";
+    cout << "SWAP PROCESS\n\n";
     printCreatedProc(swapArr);
     cout << endl;
 
-    cout << "PHYSICAL PAGE\n";
+    cout << "PHYSICAL PAGE\n\n";
     printPhys(physPage);
     cout << endl;
 

@@ -116,7 +116,7 @@ void swap(struct process *xp, struct process *yp)
     *yp = temp;
 }
 
-void LRU(process proc[], process newProc, int processIndexSwap)
+void LRU(process proc[], process newProc, process* swapArr)
 {
     if(myqueue.empty())
     {
@@ -128,8 +128,10 @@ void LRU(process proc[], process newProc, int processIndexSwap)
     else
     {
         swap(&newProc, &proc[myqueue.front()]);
+        swapArr[myqueue.front()] = copy1Struct(newProc);
         myqueue.push(myqueue.front());
         myqueue.pop();
+
     }
 }
 
